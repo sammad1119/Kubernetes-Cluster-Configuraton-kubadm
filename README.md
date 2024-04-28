@@ -1,4 +1,4 @@
-# Kubernets
+# Kubernetes
 
 Kubernetes is an open-source container orchestration platform developed by Google. It helps in automating the deployment, scaling, and management of containerized applications. Containers are a lightweight, portable, and scalable way to package and run applications, and Kubernetes provides the infrastructure needed to deploy and manage these containers at scale.
 
