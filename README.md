@@ -13,7 +13,7 @@ Kubernetes is an open-source container orchestration platform developed by Googl
 
 Kubernetes is composed of several key components, each serving a specific role in the orchestration and management of containerized applications. 
 
-<b>Here's an overview of the main components:</b>
+<b>Components are as follows:</b>
 
 # Master Node:
 1. API Server: Acts as the front-end for Kubernetes and is responsible for serving the Kubernetes API. It validates and processes requests from users and other components.
