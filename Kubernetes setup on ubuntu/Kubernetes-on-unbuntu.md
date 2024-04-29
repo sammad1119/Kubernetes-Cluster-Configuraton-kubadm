@@ -1,4 +1,4 @@
-# Kubernetes v1.29 cluster Setup on unduntu Using Kubeadm and Containerd
+# Kubernetes v1.28 cluster Setup on unduntu Using Kubeadm and Containerd
 
 ## Prerequisites
 
@@ -49,8 +49,8 @@ apt-get update
 apt-get install -y apt-transport-https ca-certificates curl gpg
 
 mkdir -p -m 755 /etc/apt/keyrings
-curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.29/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
-echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.29/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
+curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.28/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.28/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
 
 apt-get update -y
 apt-get install -y kubelet kubeadm kubectl
@@ -61,7 +61,7 @@ sudo apt-mark hold kubelet kubeadm kubectl
 kubeadm version
 ```
 ```
-kubeadm version: &version.Info{Major:"1", Minor:"29", GitVersion:"v1.29.2", GitCommit:"4b8e819355d791d96b7e9d9efe4cbafae2311c88", GitTreeState:"clean", BuildDate:"2024-02-14T10:39:04Z", GoVersion:"go1.21.7", Compiler:"gc", Platform:"linux/amd64"}
+kubeadm version: &version.Info{Major:"1", Minor:"29", GitVersion:"v1.28.9", GitCommit:"4b8e819355d791d96b7e9d9efe4cbafae2311c88", GitTreeState:"clean", BuildDate:"2024-02-14T10:39:04Z", GoVersion:"go1.21.7", Compiler:"gc", Platform:"linux/amd64"}
 ```
 # pod Communication  or Install addon 
 
@@ -91,8 +91,8 @@ kubeadm join \
 ```
 kubectl get nodes
 NAME       STATUS   ROLES           AGE     VERSION
-master     Ready    control-plane   3m59s   v1.29.2
-slave-01   Ready    <none>          3m19s   v1.29.2
+master     Ready    control-plane   3m59s   v1.28.9
+slave-01   Ready    <none>          3m19s   v1.28.9
 
 ******
 ```
