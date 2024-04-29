@@ -1,7 +1,7 @@
 # Kubernetes v1.28 cluster Setup on unduntu Using Kubeadm and Containerd
 
 ## Overview
-This guide provides detailed instructions for setting up a multi-node Kubernetes cluster using Kubeadm. The guide includes instructions for installing and configuring containerd and Kubernetes, disabling swap, initializing the cluster, installing Flannel, and joining nodes to the cluster.
+This guide provides detailed instructions for setting up a Kubernetes cluster using Kubeadm. The guide includes instructions for installing and configuring containerd and Kubernetes, disabling swap, initializing the cluster, installing Flannel, and joining nodes to the cluster.
 
 ## Prerequisites
 Before starting the installation process, ensure that the following prerequisites are met:
@@ -12,7 +12,7 @@ Before starting the installation process, ensure that the following prerequisite
 - You have root access to each server.
 
 ## Installation Steps
-The following are the step-by-step instructions for setting up a multi-node Kubernetes cluster using Kubeadm:
+The following are the step-by-step instructions for setting up a  Kubernetes cluster using Kubeadm:
 
 Update the system's package list and install necessary dependencies using the following commands:
 
@@ -22,7 +22,7 @@ sudo apt install apt-transport-https curl -y
 ```
 
 ## Install containerd
-To install Containerd, use the following commands:
+To install Containerd and Docker, use the following commands:
 
 ```
 sudo mkdir -p /etc/apt/keyrings
