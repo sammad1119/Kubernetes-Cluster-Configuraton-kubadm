@@ -123,9 +123,11 @@ Verify that all the pods are up and running:
 kubectl get pods --all-namespaces
 ```
 
-## Join Nodes
+## Join Nodes (Example Token give token that master node has given)
 To add nodes to the cluster, run the kubeadm join command with the appropriate arguments on each node. The command will output a token that can be used to join the node to the cluster.
-
+```
+sudo kubeadm join 192.168.4.50:6443 --token gskopd.a4gg38hvsql2qprz         --discovery-token-ca-cert-hash sha256:535a4ec84c541a6401f167fa5f2ff4717a359230fe3af6a81cd8ed1d427ce169
+```
 ## Test the setup
 ```
 kubectl get nodes
