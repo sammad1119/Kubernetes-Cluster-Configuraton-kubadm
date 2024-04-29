@@ -1,5 +1,7 @@
-# Kubernetes v1.29 cluster Setup on unduntu Using Kubeadm and Containerd
+# Kubernetes v1.28 cluster Setup on unduntu Using Kubeadm and Containerd
 
+## Overview
+This guide provides detailed instructions for setting up a multi-node Kubernetes cluster using Kubeadm. The guide includes instructions for installing and configuring containerd and Kubernetes, disabling swap, initializing the cluster, installing Flannel, and joining nodes to the cluster.
 ## Prerequisites
 
 - A compatible Linux hosts:  2 GB or more of RAM per machine and 2 CPUs or more 
@@ -23,68 +25,128 @@
 	30000-32767 for NodePort Services
 	```
 
-## Run on all nodes of the cluster as root user
-#### Disable SWAP
-You MUST disable swap in order for the kubelet to work properly 
-```
-swapoff -a
-sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
-```
-#### Install Containerd or Docker
-```
-wget https://github.com/containerd/containerd/releases/download/v1.7.13/containerd-1.7.13-linux-amd64.tar.gz
-tar Cxzvf /usr/local containerd-1.7.13-linux-amd64.tar.gz
-wget https://raw.githubusercontent.com/containerd/containerd/main/containerd.service
-mkdir -p /usr/local/lib/systemd/system
-mv containerd.service /usr/local/lib/systemd/system/containerd.service
-systemctl daemon-reload
-systemctl enable --now containerd
-```
 
+Before starting the installation process, ensure that the following prerequisites are met:
 
+- You have at least two Ubuntu 18.04 or higher servers available for creating the cluster.
+- Each server has at least 2GB of RAM and 2 CPU cores.
+- The servers have network connectivity to each other.
+- You have root access to each server.
 
-#### Install kubectl, kubelet and kubeadm
-```
-apt-get update
-apt-get install -y apt-transport-https ca-certificates curl gpg
+## Installation Steps
+The following are the step-by-step instructions for setting up a multi-node Kubernetes cluster using Kubeadm:
 
-mkdir -p -m 755 /etc/apt/keyrings
-curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.29/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
-echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.29/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
-
-apt-get update -y
-apt-get install -y kubelet kubeadm kubectl
-sudo apt-mark hold kubelet kubeadm kubectl
-```
-# Check kubeadm version
-```
-kubeadm version
-```
-```
-kubeadm version: &version.Info{Major:"1", Minor:"29", GitVersion:"v1.29.2", GitCommit:"4b8e819355d791d96b7e9d9efe4cbafae2311c88", GitTreeState:"clean", BuildDate:"2024-02-14T10:39:04Z", GoVersion:"go1.21.7", Compiler:"gc", Platform:"linux/amd64"}
-```
-# pod Communication  or Install addon 
-
-Calico : Choose one node as your Kubernetes master. On that node sudo kubeadm init --pod-network-cidr=192.168.0.0/16
-
-
-
-## Run on Master Node and follow the instructions
+Update the system's package list and install necessary dependencies using the following commands:
 
 ```
-kubeadm config images pull
-kubeadm init
-```
-#### Install any CNI plugin. We will use weavenet
-```
-kubectl apply -f https://github.com/weaveworks/weave/releases/download/v2.8.1/weave-daemonset-k8s.yaml
+sudo apt-get update
+sudo apt install apt-transport-https curl -y
 ```
 
-## Run on Slave Nodes 
-Run the join command obtained from kubeadm init output on all Workers nodes. Example
+## Install containerd
+To install Containerd, use the following commands:
+
 ```
-kubeadm join \
-192.168.56.2:6443 --token … --discovery-token-ca-cert-hash sha256 . . . .
+sudo mkdir -p /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt-get update
+sudo apt-get install containerd.io -y
+```
+
+## Create containerd configuration
+Next, create the containerd configuration file using the following commands:
+
+```
+sudo mkdir -p /etc/containerd
+sudo containerd config default | sudo tee /etc/containerd/config.toml
+```
+
+## Edit /etc/containerd/config.toml
+Edit the containerd configuration file to set SystemdCgroup to true. Use the following command to open the file:
+
+```
+sudo nano /etc/containerd/config.toml
+```
+
+Set SystemdCgroup to true:
+```
+SystemdCgroup = true
+```
+
+Restart containerd:
+```
+sudo systemctl restart containerd
+```
+
+## Install Kubernetes
+To install Kubernetes, use the following commands:
+
+```
+curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add
+curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.28/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.28/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
+sudo apt install kubeadm kubelet kubectl kubernetes-cni
+```
+
+## Disable swap
+Disable swap using the following command:
+
+```
+sudo swapoff -a
+```
+
+If there are any swap entries in the /etc/fstab file, remove them using a text editor such as nano:
+```
+sudo nano /etc/fstab
+```
+
+Enable kernel modules
+```
+sudo modprobe br_netfilter
+```
+
+Add some settings to sysctl
+```
+sudo sysctl -w net.ipv4.ip_forward=1
+```
+## Initialize the Cluster (Run only on master)
+Use the following command to initialize the cluster:
+```
+sudo kubeadm init --pod-network-cidr=10.244.0.0/16
+```
+
+Create a .kube directory in your home directory:
+```
+mkdir -p $HOME/.kube
+```
+
+Copy the Kubernetes configuration file to your home directory:
+```
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+```
+
+Change ownership of the file:
+```
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+```
+
+## Install Flannel (Run only on master)
+Use the following command to install Flannel:
+```
+kubectl apply -f https://raw.githubusercontent.com/flannel-io/flannel/v0.20.2/Documentation/kube-flannel.yml
+```
+
+## Verify Installation
+Verify that all the pods are up and running:
+
+```
+kubectl get pods --all-namespaces
+```
+
+## Join Nodes
+To add nodes to the cluster, run the kubeadm join command with the appropriate arguments on each node. The command will output a token that can be used to join the node to the cluster.
+
 ```
 
 ## Test the setup
