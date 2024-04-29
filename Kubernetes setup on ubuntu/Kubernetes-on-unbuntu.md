@@ -39,6 +39,10 @@ mkdir -p /usr/local/lib/systemd/system
 mv containerd.service /usr/local/lib/systemd/system/containerd.service
 systemctl daemon-reload
 systemctl enable --now containerd
+
+or
+
+sudo apt intall docker 
 ```
 
 
