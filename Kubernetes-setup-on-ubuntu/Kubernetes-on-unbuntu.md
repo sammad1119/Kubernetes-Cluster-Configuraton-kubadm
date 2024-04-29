@@ -2,30 +2,8 @@
 
 ## Overview
 This guide provides detailed instructions for setting up a multi-node Kubernetes cluster using Kubeadm. The guide includes instructions for installing and configuring containerd and Kubernetes, disabling swap, initializing the cluster, installing Flannel, and joining nodes to the cluster.
+
 ## Prerequisites
-
-- A compatible Linux hosts:  2 GB or more of RAM per machine and 2 CPUs or more 
-- 3 - Ubuntu 20.04 LTS Serves:  1x Manager (4GB RAM, 2 vCPU)t2.medium type, 2x Workers (1 GB, 1 Core) t2.micro type 
-- Full network connectivity between all machines in the cluster 
-- Unique hostname for each host. Change hostname of the machines using hostnamectl. For master nodes, run`hostnamectl set-hostname master`. For slaves, run `hostnamectl set-hostname slave-01`  `hostnamectl set-hostname slave-02` 
-- Certain ports are open on your machines(https://kubernetes.io/docs/reference/ports-and-protocols/)
-  - On Master Node
-	```
-	6443/tcp for Kubernetes API Server
-	2379-2380 for etcd server client API
-	6783/tcp,6784/udp for Weavenet CNI
-	10248-10260 for Kubelet API, Kube-scheduler, Kube-controller-manager, Read-Only Kubelet API, Kubelet health
-	80,8080,443 Generic Ports
-	30000-32767 for NodePort Services
-	```
-  - On Slave Nodes
-	```
-	6783/tcp,6784/udp for Weavenet CNI
-	10248-10260 for Kubelet API etc
-	30000-32767 for NodePort Services
-	```
-
-
 Before starting the installation process, ensure that the following prerequisites are met:
 
 - You have at least two Ubuntu 18.04 or higher servers available for creating the cluster.
@@ -147,14 +125,12 @@ kubectl get pods --all-namespaces
 ## Join Nodes
 To add nodes to the cluster, run the kubeadm join command with the appropriate arguments on each node. The command will output a token that can be used to join the node to the cluster.
 
-```
-
 ## Test the setup
 ```
 kubectl get nodes
 NAME       STATUS   ROLES           AGE     VERSION
-master     Ready    control-plane   3m59s   v1.29.2
-slave-01   Ready    <none>          3m19s   v1.29.2
+master     Ready    control-plane   3m59s   v1.28.9
+slave-01   Ready    <none>          3m19s   v1.28.9
 
 ******
 ```
